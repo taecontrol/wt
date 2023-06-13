@@ -1,4 +1,4 @@
-package wt
+package core
 
 import (
 	"os"
@@ -6,9 +6,6 @@ import (
 
 	"gopkg.in/yaml.v3"
 )
-
-type Command struct {
-}
 
 type Config struct {
 	InitCommands      []string `yaml:"init_commands"`

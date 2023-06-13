@@ -1,4 +1,4 @@
-package wt
+package core
 
 import (
 	"testing"
