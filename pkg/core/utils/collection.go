@@ -5,9 +5,10 @@ type Collection[T any] struct {
 }
 
 type (
-	FilterCallback[T any]        func(item T, index int) bool
-	MapCallback[T any]           func(T, int) T
-	ReduceCallback[T any, K any] func(K, T, int) K
+	FilterCallback[T any]              func(item T, index int) bool
+	MapCallback[T any]                 func(T, int) T
+	ReduceCallback[T any, K any]       func(K, T, int) K
+	ToCollectionCallback[T any, K any] func(K) T
 )
 
 func NewCollection[T any](items []T) Collection[T] {
@@ -61,4 +62,14 @@ func Reduce[T any, K any](c Collection[T], callback ReduceCallback[T, K], initia
 	}
 
 	return accumulator
+}
+
+func ToCollection[T any, K any](items []K, callback ToCollectionCallback[T, K]) Collection[T] {
+	var collectionItems []T
+
+	for _, item := range items {
+		collectionItems = append(collectionItems, callback(item))
+	}
+
+	return Collection[T]{Items: collectionItems}
 }

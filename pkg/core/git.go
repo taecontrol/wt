@@ -69,15 +69,15 @@ func RemoveWorktree(path string, Exec CommandExecHandler, forceOption bool) erro
 	return nil
 }
 
-func ListWorktrees() (utils.Collection[string], error) {
-	command := exec.Command("git", "worktree", "list", "--porcelain", "-z")
+func ListWorktrees(Exec CommandExecHandler) (utils.Collection[utils.Worktree], error) {
+	command := Exec("git", "worktree", "list", "--porcelain")
 
 	out, err := command.Output()
 	if err != nil {
-		return utils.Collection[string]{}, err
+		return utils.Collection[utils.Worktree]{}, err
 	}
 
-	worktrees := utils.NewCollection[string](strings.Split(string(out), "\x00"))
+	worktrees := utils.NewCollection[string](strings.Split(string(out), "\n"))
 	worktrees = worktrees.Filter(func(worktree string, _ int) bool {
 		return worktree != ""
 	})
@@ -94,11 +94,12 @@ func ListWorktrees() (utils.Collection[string], error) {
 				if strings.Split(worktrees.Get(i), " ")[0] == "worktree" {
 					break
 				}
-				group := worktrees.Slice(startIndex, endIndex)
+			}
 
-				if group.Count() > 0 {
-					acc = append(acc, group.Items)
-				}
+			group := worktrees.Slice(startIndex, endIndex)
+
+			if group.Count() > 0 {
+				acc = append(acc, group.Items)
 			}
 
 			return acc
@@ -107,5 +108,9 @@ func ListWorktrees() (utils.Collection[string], error) {
 		return acc
 	}, [][]string{})
 
-	return worktrees, nil
+	worktreesCollection := utils.ToCollection[utils.Worktree, []string](groupedWorktrees, func(group []string) utils.Worktree {
+		return utils.NewWorktreeFromGroupArray(group)
+	})
+
+	return worktreesCollection, nil
 }

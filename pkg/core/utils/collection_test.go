@@ -1,6 +1,7 @@
 package utils
 
 import (
+	"fmt"
 	"testing"
 )
 
@@ -116,6 +117,30 @@ func TestReduce(t *testing.T) {
 
 		if reduced != 6 {
 			t.Error("Reduce should reduce the items in the collection")
+		}
+	})
+}
+
+func TestToCollection(t *testing.T) {
+	t.Run("It converts the items to a collection", func(t *testing.T) {
+		collection := ToCollection[string, int]([]int{1, 2, 3}, func(item int) string {
+			return fmt.Sprintf("value: %d", item)
+		})
+
+		if len(collection.Items) != 3 {
+			t.Error("Collection should be of length 3")
+		}
+
+		if collection.Items[0] != "value: 1" {
+			t.Error("First item should be value: 1")
+		}
+
+		if collection.Items[1] != "value: 2" {
+			t.Error("Second item should be value: 2")
+		}
+
+		if collection.Items[2] != "value: 3" {
+			t.Error("Third item should be value: 3")
 		}
 	})
 }
