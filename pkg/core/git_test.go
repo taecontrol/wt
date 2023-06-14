@@ -149,3 +149,30 @@ func TestListWorktrees(t *testing.T) {
 		}
 	})
 }
+
+func TestGetMainWorktree(t *testing.T) {
+	t.Run("It returns the main worktree", func(t *testing.T) {
+		ExecHandlerMock := func(name string, arg ...string) *exec.Cmd {
+			return exec.Command("echo", "worktree /path/to/linked-worktree\nHEAD abcd1234abcd1234abcd1234abcd1234abcd1234\nbranch refs/heads/master\nworktree /path/to/other-linked-worktree\nHEAD 1234abc1234abc1234abc1234abc1234abc1234a\ndetached\nworktree /path/to/linked-worktree-locked-no-reason\nHEAD 5678abc5678abc5678abc5678abc5678abc5678c\nbranch refs/heads/locked-no-reason\nlocked\nworktree /path/to/linked-worktree-locked-with-reason\nHEAD 3456def3456def3456def3456def3456def3456b\nbranch refs/heads/locked-with-reason\nlocked reason why is locked\nworktree /path/to/linked-worktree-prunable\nHEAD 1233def1234def1234def1234def1234def1234b\ndetached\nprunable gitdir file points to non-existent location")
+		}
+
+		worktree, err := GetMainWorktree(ExecHandlerMock)
+
+		if err != nil {
+			t.Errorf("GetMainWorktree should return a worktrees: %v", err)
+		}
+
+		if worktree.Path != "/path/to/linked-worktree" {
+			t.Errorf("Second item should be /path/to/linked-worktree, got %s", worktree.Path)
+		}
+		if worktree.Head != "abcd1234abcd1234abcd1234abcd1234abcd1234" {
+			t.Errorf("Second item should be /path/to/linked-worktree, got %s", worktree.Head)
+		}
+		if worktree.Bare != false {
+			t.Errorf("Second item should be false, got %t", worktree.Bare)
+		}
+		if worktree.Branch != "refs/heads/master" {
+			t.Errorf("Second item should be refs/heads/master, got %s", worktree.Branch)
+		}
+	})
+}

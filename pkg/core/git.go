@@ -114,3 +114,12 @@ func ListWorktrees(Exec CommandExecHandler) (utils.Collection[utils.Worktree], e
 
 	return worktreesCollection, nil
 }
+
+func GetMainWorktree(Exec CommandExecHandler) (utils.Worktree, error) {
+	worktrees, err := ListWorktrees(Exec)
+	if err != nil {
+		return utils.Worktree{}, err
+	}
+
+	return worktrees.Items[0], nil
+}
