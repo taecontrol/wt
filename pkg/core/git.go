@@ -1,16 +1,11 @@
 package core
 
 import (
-	"os/exec"
 	"strings"
 	"wt/pkg/core/utils"
 )
 
-type (
-	CommandExecHandler func(name string, arg ...string) *exec.Cmd
-)
-
-func List(Exec CommandExecHandler) (utils.Collection[string], error) {
+func List(Exec utils.CommandExecHandler) (utils.Collection[string], error) {
 	command := Exec("git", "branch", "--list")
 
 	out, err := command.Output()
@@ -35,7 +30,7 @@ func List(Exec CommandExecHandler) (utils.Collection[string], error) {
 	return branches, nil
 }
 
-func AddWorktree(path string, branch string, Exec CommandExecHandler, newBranchOption bool) error {
+func AddWorktree(path string, branch string, Exec utils.CommandExecHandler, newBranchOption bool) error {
 	args := []string{"worktree", "add", path}
 
 	if newBranchOption {
@@ -52,7 +47,7 @@ func AddWorktree(path string, branch string, Exec CommandExecHandler, newBranchO
 	return nil
 }
 
-func RemoveWorktree(path string, Exec CommandExecHandler, forceOption bool) error {
+func RemoveWorktree(path string, Exec utils.CommandExecHandler, forceOption bool) error {
 	args := []string{"worktree", "remove", path}
 
 	if forceOption {
@@ -69,7 +64,7 @@ func RemoveWorktree(path string, Exec CommandExecHandler, forceOption bool) erro
 	return nil
 }
 
-func ListWorktrees(Exec CommandExecHandler) (utils.Collection[utils.Worktree], error) {
+func ListWorktrees(Exec utils.CommandExecHandler) (utils.Collection[utils.Worktree], error) {
 	command := Exec("git", "worktree", "list", "--porcelain")
 
 	out, err := command.Output()
@@ -115,7 +110,7 @@ func ListWorktrees(Exec CommandExecHandler) (utils.Collection[utils.Worktree], e
 	return worktreesCollection, nil
 }
 
-func GetMainWorktree(Exec CommandExecHandler) (utils.Worktree, error) {
+func GetMainWorktree(Exec utils.CommandExecHandler) (utils.Worktree, error) {
 	worktrees, err := ListWorktrees(Exec)
 	if err != nil {
 		return utils.Worktree{}, err

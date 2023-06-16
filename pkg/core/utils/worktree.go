@@ -21,7 +21,7 @@ func NewWorktreeFromGroupArray(group []string) Worktree {
 }
 
 func getPathFromGroupArray(group []string) string {
-	selectedItem := GetItemThatContains(group, "worktree")
+	selectedItem := getItemThatContains(group, "worktree")
 
 	if len(selectedItem) == 0 {
 		return ""
@@ -31,7 +31,7 @@ func getPathFromGroupArray(group []string) string {
 }
 
 func getHeadFromGroupArray(group []string) string {
-	selectedItem := GetItemThatContains(group, "HEAD")
+	selectedItem := getItemThatContains(group, "HEAD")
 
 	if len(selectedItem) == 0 {
 		return ""
@@ -41,7 +41,7 @@ func getHeadFromGroupArray(group []string) string {
 }
 
 func getBranchFromGroupArray(group []string) string {
-	selectedItem := GetItemThatContains(group, "branch")
+	selectedItem := getItemThatContains(group, "branch")
 
 	if len(selectedItem) == 0 {
 		return ""
@@ -51,11 +51,11 @@ func getBranchFromGroupArray(group []string) string {
 }
 
 func getBareFromGroupArray(group []string) bool {
-	selectedItem := GetItemThatContains(group, "bare")
+	selectedItem := getItemThatContains(group, "bare")
 	return len(selectedItem) != 0
 }
 
-func GetItemThatContains(group []string, substring string) string {
+func getItemThatContains(group []string, substring string) string {
 	selectedItem := ""
 
 	for _, item := range group {

@@ -1,8 +1,22 @@
 package main
 
-import "wt/cmd/wt"
+import (
+	"fmt"
+	"os"
+	"os/exec"
+	"wt/cmd"
+	"wt/pkg/core/utils"
+)
 
 func main() {
-	// Execute the root command
-	wt.Execute()
+	app := &utils.App{
+		Exec: exec.Command,
+	}
+
+	rootCmd := cmd.NewRootCmd(app)
+
+	if err := rootCmd.Execute(); err != nil {
+		fmt.Fprintf(os.Stderr, "There was an error while executing the command: %s\n", err)
+		os.Exit(1)
+	}
 }
