@@ -2,18 +2,18 @@ package cmd
 
 import (
 	"context"
-	"wt/pkg/core/utils"
+	"wt/pkg/core"
 
 	"github.com/spf13/cobra"
 )
 
-func NewRootCmd(app *utils.App) *cobra.Command {
+func NewRootCmd(app *core.App) *cobra.Command {
 	rootCmd := &cobra.Command{
 		Use:   "wt",
 		Short: "wt is a CLI tool for working with git worktrees",
 
 		PersistentPreRun: func(cmd *cobra.Command, args []string) {
-			ctx := context.WithValue(cmd.Context(), utils.AppKey{}, app)
+			ctx := context.WithValue(cmd.Context(), core.AppKey{}, app)
 			cmd.SetContext(ctx)
 		},
 

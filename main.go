@@ -5,11 +5,11 @@ import (
 	"os"
 	"os/exec"
 	"wt/cmd"
-	"wt/pkg/core/utils"
+	"wt/pkg/core"
 )
 
 func main() {
-	app := &utils.App{
+	app := &core.App{
 		Exec: exec.Command,
 	}
 

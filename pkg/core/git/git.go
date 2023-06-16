@@ -1,11 +1,25 @@
-package core
+package git
 
 import (
 	"strings"
 	"wt/pkg/core/utils"
 )
 
-func List(Exec utils.CommandExecHandler) (utils.Collection[string], error) {
+type GitContract interface {
+	List(Exec utils.CommandExecHandler) (utils.Collection[string], error)
+	AddWorktree(path string, branch string, Exec utils.CommandExecHandler, newBranchOption bool) error
+	RemoveWorktree(path string, Exec utils.CommandExecHandler, forceOption bool) error
+	ListWorktrees(Exec utils.CommandExecHandler) (utils.Collection[utils.Worktree], error)
+	GetMainWorktree(Exec utils.CommandExecHandler) (utils.Worktree, error)
+}
+
+type Git struct{}
+
+func NewGit() *Git {
+	return &Git{}
+}
+
+func (git *Git) List(Exec utils.CommandExecHandler) (utils.Collection[string], error) {
 	command := Exec("git", "branch", "--list")
 
 	out, err := command.Output()
@@ -30,7 +44,7 @@ func List(Exec utils.CommandExecHandler) (utils.Collection[string], error) {
 	return branches, nil
 }
 
-func AddWorktree(path string, branch string, Exec utils.CommandExecHandler, newBranchOption bool) error {
+func (git *Git) AddWorktree(path string, branch string, Exec utils.CommandExecHandler, newBranchOption bool) error {
 	args := []string{"worktree", "add", path}
 
 	if newBranchOption {
@@ -47,7 +61,7 @@ func AddWorktree(path string, branch string, Exec utils.CommandExecHandler, newB
 	return nil
 }
 
-func RemoveWorktree(path string, Exec utils.CommandExecHandler, forceOption bool) error {
+func (git *Git) RemoveWorktree(path string, Exec utils.CommandExecHandler, forceOption bool) error {
 	args := []string{"worktree", "remove", path}
 
 	if forceOption {
@@ -64,7 +78,7 @@ func RemoveWorktree(path string, Exec utils.CommandExecHandler, forceOption bool
 	return nil
 }
 
-func ListWorktrees(Exec utils.CommandExecHandler) (utils.Collection[utils.Worktree], error) {
+func (git *Git) ListWorktrees(Exec utils.CommandExecHandler) (utils.Collection[utils.Worktree], error) {
 	command := Exec("git", "worktree", "list", "--porcelain")
 
 	out, err := command.Output()
@@ -110,8 +124,8 @@ func ListWorktrees(Exec utils.CommandExecHandler) (utils.Collection[utils.Worktr
 	return worktreesCollection, nil
 }
 
-func GetMainWorktree(Exec utils.CommandExecHandler) (utils.Worktree, error) {
-	worktrees, err := ListWorktrees(Exec)
+func (git *Git) GetMainWorktree(Exec utils.CommandExecHandler) (utils.Worktree, error) {
+	worktrees, err := git.ListWorktrees(Exec)
 	if err != nil {
 		return utils.Worktree{}, err
 	}

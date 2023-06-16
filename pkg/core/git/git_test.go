@@ -1,4 +1,4 @@
-package core
+package git
 
 import (
 	"os/exec"
@@ -12,7 +12,8 @@ func TestList(t *testing.T) {
 			return exec.Command("echo", "  master\n* develop\n  feature/branch\n+ test")
 		}
 
-		branches, err := List(ExecHandlerMock)
+		git := &Git{}
+		branches, err := git.List(ExecHandlerMock)
 
 		if err != nil {
 			t.Errorf("List should return a list of branches: %v", err)
@@ -41,7 +42,8 @@ func TestAddWorktree(t *testing.T) {
 			return exec.Command("echo", "  master\n* develop\n  feature/branch\n+ test")
 		}
 
-		err := AddWorktree("/path/to/worktree", "test", ExecHandlerMock, false)
+		git := &Git{}
+		err := git.AddWorktree("/path/to/worktree", "test", ExecHandlerMock, false)
 
 		if args != "git worktree add /path/to/worktree test" {
 			t.Errorf("Args should be git worktree add /path/to/worktree test, got %s", args)
@@ -60,7 +62,8 @@ func TestAddWorktree(t *testing.T) {
 			return exec.Command("echo", "  master\n* develop\n  feature/branch\n+ test")
 		}
 
-		err := AddWorktree("/path/to/worktree", "test", ExecHandlerMock, true)
+		git := &Git{}
+		err := git.AddWorktree("/path/to/worktree", "test", ExecHandlerMock, true)
 
 		if args != "git worktree add /path/to/worktree -b test" {
 			t.Errorf("Args should be git worktree add /path/to/worktree -b test, got %s", args)
@@ -81,7 +84,8 @@ func TestRemoveWorktree(t *testing.T) {
 			return exec.Command("echo", "  master\n* develop\n  feature/branch\n+ test")
 		}
 
-		err := RemoveWorktree("/path/to/worktree", ExecHandlerMock, false)
+		git := &Git{}
+		err := git.RemoveWorktree("/path/to/worktree", ExecHandlerMock, false)
 
 		if args != "git worktree remove /path/to/worktree" {
 			t.Errorf("Args should be git worktree remove /path/to/worktree, got %s", args)
@@ -100,7 +104,8 @@ func TestRemoveWorktree(t *testing.T) {
 			return exec.Command("echo", "  master\n* develop\n  feature/branch\n+ test")
 		}
 
-		err := RemoveWorktree("/path/to/worktree", ExecHandlerMock, true)
+		git := &Git{}
+		err := git.RemoveWorktree("/path/to/worktree", ExecHandlerMock, true)
 
 		if args != "git worktree remove /path/to/worktree --force" {
 			t.Errorf("Args should be git worktree remove /path/to/worktree --force, got %s", args)
@@ -118,7 +123,8 @@ func TestListWorktrees(t *testing.T) {
 			return exec.Command("echo", "worktree /path/to/bare-source\nbare\nworktree /path/to/linked-worktree\nHEAD abcd1234abcd1234abcd1234abcd1234abcd1234\nbranch refs/heads/master\nworktree /path/to/other-linked-worktree\nHEAD 1234abc1234abc1234abc1234abc1234abc1234a\ndetached\nworktree /path/to/linked-worktree-locked-no-reason\nHEAD 5678abc5678abc5678abc5678abc5678abc5678c\nbranch refs/heads/locked-no-reason\nlocked\nworktree /path/to/linked-worktree-locked-with-reason\nHEAD 3456def3456def3456def3456def3456def3456b\nbranch refs/heads/locked-with-reason\nlocked reason why is locked\nworktree /path/to/linked-worktree-prunable\nHEAD 1233def1234def1234def1234def1234def1234b\ndetached\nprunable gitdir file points to non-existent location")
 		}
 
-		worktrees, err := ListWorktrees(ExecHandlerMock)
+		git := &Git{}
+		worktrees, err := git.ListWorktrees(ExecHandlerMock)
 
 		if err != nil {
 			t.Errorf("ListWorktrees should return a list of worktrees: %v", err)
@@ -156,7 +162,8 @@ func TestGetMainWorktree(t *testing.T) {
 			return exec.Command("echo", "worktree /path/to/linked-worktree\nHEAD abcd1234abcd1234abcd1234abcd1234abcd1234\nbranch refs/heads/master\nworktree /path/to/other-linked-worktree\nHEAD 1234abc1234abc1234abc1234abc1234abc1234a\ndetached\nworktree /path/to/linked-worktree-locked-no-reason\nHEAD 5678abc5678abc5678abc5678abc5678abc5678c\nbranch refs/heads/locked-no-reason\nlocked\nworktree /path/to/linked-worktree-locked-with-reason\nHEAD 3456def3456def3456def3456def3456def3456b\nbranch refs/heads/locked-with-reason\nlocked reason why is locked\nworktree /path/to/linked-worktree-prunable\nHEAD 1233def1234def1234def1234def1234def1234b\ndetached\nprunable gitdir file points to non-existent location")
 		}
 
-		worktree, err := GetMainWorktree(ExecHandlerMock)
+		git := &Git{}
+		worktree, err := git.GetMainWorktree(ExecHandlerMock)
 
 		if err != nil {
 			t.Errorf("GetMainWorktree should return a worktrees: %v", err)

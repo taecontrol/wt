@@ -2,7 +2,6 @@ package cmd
 
 import (
 	"wt/pkg/core"
-	"wt/pkg/core/utils"
 
 	"github.com/spf13/cobra"
 )
@@ -17,17 +16,17 @@ func NewAddCmd() *cobra.Command {
 	wt add <worktree_name> <branch>
 	`,
 		Run: func(cmd *cobra.Command, args []string) {
-			app := cmd.Context().Value(utils.AppKey{}).(*utils.App)
+			app := cmd.Context().Value(core.AppKey{}).(*core.App)
 			name := args[0]
 			branch := args[1]
-			mainWorktree, err := core.GetMainWorktree(app.Exec)
+			mainWorktree, err := app.Git.GetMainWorktree(app.Exec)
 			if err != nil {
 				panic(err)
 			}
 
 			path := mainWorktree.Path + "/" + name
 
-			core.AddWorktree(path, branch, app.Exec, false)
+			app.Git.AddWorktree(path, branch, app.Exec, false)
 		},
 	}
 
