@@ -7,6 +7,11 @@ import (
 	"gopkg.in/yaml.v3"
 )
 
+type ConfigContract interface {
+	LoadConfig() error
+	DefaultConfigPath() string
+}
+
 type Config struct {
 	InitCommands      []string `yaml:"init_commands"`
 	TerminateCommands []string `yaml:"terminate_commands"`
@@ -16,19 +21,15 @@ type Config struct {
 	ParseYaml    func([]byte, interface{}) error
 }
 
-func NewConfig() (*Config, error) {
-	c := &Config{
+func NewConfig() *Config {
+	return &Config{
 		AbsolutePath: filepath.Abs,
 		ReadFile:     os.ReadFile,
 		ParseYaml:    yaml.Unmarshal,
 	}
-
-	err := c.LoadConfiguration()
-
-	return c, err
 }
 
-func (c *Config) LoadConfiguration() error {
+func (c *Config) LoadConfig() error {
 	fileData, err := c.ReadFile(c.DefaultConfigPath())
 	if err != nil {
 		return err

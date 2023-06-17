@@ -38,7 +38,7 @@ func TestLoadConfiguration(t *testing.T) {
 			},
 		}
 
-		err := config.LoadConfiguration()
+		err := config.LoadConfig()
 
 		if len(config.InitCommands) != 1 && config.InitCommands[0] != "echo 'hello world'" {
 			t.Errorf("LoadConfiguration should load the init_commands from the .wt file: %v", err)
