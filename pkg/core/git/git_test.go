@@ -1,8 +1,9 @@
-package git
+package git_test
 
 import (
 	"os/exec"
 	"testing"
+	"wt/pkg/core/git"
 	"wt/pkg/core/utils"
 )
 
@@ -11,7 +12,7 @@ func TestList(t *testing.T) {
 		cmdExecMock := utils.NewCmdExecutorMock()
 		cmdExecMock.On("Exec", "git", []string{"branch", "--list"}).Return(exec.Command("echo", "  master\n* develop\n  feature/branch\n+ test"))
 
-		git := &Git{}
+		git := &git.Git{}
 		branches, err := git.List(cmdExecMock)
 
 		if err != nil {
@@ -39,7 +40,7 @@ func TestAddWorktree(t *testing.T) {
 		cmdExecMock := utils.NewCmdExecutorMock()
 		cmdExecMock.On("Exec", "git", []string{"worktree", "add", "/path/to/worktree", "test"}).Return(exec.Command("echo", "Command executed"))
 
-		git := &Git{}
+		git := &git.Git{}
 		err := git.AddWorktree("/path/to/worktree", "test", cmdExecMock, false)
 
 		if err != nil {
@@ -53,7 +54,7 @@ func TestAddWorktree(t *testing.T) {
 		cmdExecMock := utils.NewCmdExecutorMock()
 		cmdExecMock.On("Exec", "git", []string{"worktree", "add", "/path/to/worktree", "-b", "test"}).Return(exec.Command("echo", "Command executed"))
 
-		git := &Git{}
+		git := &git.Git{}
 		err := git.AddWorktree("/path/to/worktree", "test", cmdExecMock, true)
 
 		if err != nil {
@@ -69,7 +70,7 @@ func TestRemoveWorktree(t *testing.T) {
 		cmdExecMock := utils.NewCmdExecutorMock()
 		cmdExecMock.On("Exec", "git", []string{"worktree", "remove", "/path/to/worktree"}).Return(exec.Command("echo", "Command executed"))
 
-		git := &Git{}
+		git := &git.Git{}
 		err := git.RemoveWorktree("/path/to/worktree", cmdExecMock, false)
 
 		if err != nil {
@@ -83,7 +84,7 @@ func TestRemoveWorktree(t *testing.T) {
 		cmdExecMock := utils.NewCmdExecutorMock()
 		cmdExecMock.On("Exec", "git", []string{"worktree", "remove", "/path/to/worktree", "--force"}).Return(exec.Command("echo", "Command executed"))
 
-		git := &Git{}
+		git := &git.Git{}
 		err := git.RemoveWorktree("/path/to/worktree", cmdExecMock, true)
 
 		if err != nil {
@@ -99,7 +100,7 @@ func TestListWorktrees(t *testing.T) {
 		cmdExecMock := utils.NewCmdExecutorMock()
 		cmdExecMock.On("Exec", "git", []string{"worktree", "list", "--porcelain"}).Return(exec.Command("echo", "worktree /path/to/bare-source\nbare\nworktree /path/to/linked-worktree\nHEAD abcd1234abcd1234abcd1234abcd1234abcd1234\nbranch refs/heads/master\nworktree /path/to/other-linked-worktree\nHEAD 1234abc1234abc1234abc1234abc1234abc1234a\ndetached\nworktree /path/to/linked-worktree-locked-no-reason\nHEAD 5678abc5678abc5678abc5678abc5678abc5678c\nbranch refs/heads/locked-no-reason\nlocked\nworktree /path/to/linked-worktree-locked-with-reason\nHEAD 3456def3456def3456def3456def3456def3456b\nbranch refs/heads/locked-with-reason\nlocked reason why is locked\nworktree /path/to/linked-worktree-prunable\nHEAD 1233def1234def1234def1234def1234def1234b\ndetached\nprunable gitdir file points to non-existent location"))
 
-		git := &Git{}
+		git := &git.Git{}
 		worktrees, err := git.ListWorktrees(cmdExecMock)
 
 		if err != nil {
@@ -139,7 +140,7 @@ func TestGetMainWorktree(t *testing.T) {
 		cmdExecMock := utils.NewCmdExecutorMock()
 		cmdExecMock.On("Exec", "git", []string{"worktree", "list", "--porcelain"}).Return(exec.Command("echo", "worktree /path/to/linked-worktree\nHEAD abcd1234abcd1234abcd1234abcd1234abcd1234\nbranch refs/heads/master\nworktree /path/to/other-linked-worktree\nHEAD 1234abc1234abc1234abc1234abc1234abc1234a\ndetached\nworktree /path/to/linked-worktree-locked-no-reason\nHEAD 5678abc5678abc5678abc5678abc5678abc5678c\nbranch refs/heads/locked-no-reason\nlocked\nworktree /path/to/linked-worktree-locked-with-reason\nHEAD 3456def3456def3456def3456def3456def3456b\nbranch refs/heads/locked-with-reason\nlocked reason why is locked\nworktree /path/to/linked-worktree-prunable\nHEAD 1233def1234def1234def1234def1234def1234b\ndetached\nprunable gitdir file points to non-existent location"))
 
-		git := &Git{}
+		git := &git.Git{}
 		worktree, err := git.GetMainWorktree(cmdExecMock)
 
 		if err != nil {

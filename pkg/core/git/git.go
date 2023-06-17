@@ -1,6 +1,7 @@
 package git
 
 import (
+	"fmt"
 	"strings"
 	"wt/pkg/core/utils"
 )
@@ -53,9 +54,9 @@ func (git *Git) AddWorktree(path string, branch string, CmdExec utils.CmdExecuto
 
 	command := CmdExec.Exec("git", append(args, branch)...)
 
-	err := command.Run()
+	stdout, err := command.CombinedOutput()
 	if err != nil {
-		return err
+		return fmt.Errorf("%s", string(stdout))
 	}
 
 	return nil

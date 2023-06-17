@@ -1,7 +1,8 @@
-package core
+package core_test
 
 import (
 	"testing"
+	"wt/pkg/core"
 
 	"gopkg.in/yaml.v3"
 )
@@ -12,7 +13,7 @@ func TestDefaultConfigPath(t *testing.T) {
 			return "/absolute/path/.wt", nil
 		}
 
-		config := &Config{
+		config := &core.Config{
 			AbsolutePath: AbsHandlerMock,
 		}
 
@@ -26,7 +27,7 @@ func TestDefaultConfigPath(t *testing.T) {
 
 func TestLoadConfiguration(t *testing.T) {
 	t.Run("It loads the configuration from the .wt file", func(t *testing.T) {
-		config := &Config{
+		config := &core.Config{
 			ParseYaml: func(b []byte, i interface{}) error {
 				return yaml.Unmarshal(b, i)
 			},

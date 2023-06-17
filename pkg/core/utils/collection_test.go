@@ -1,13 +1,14 @@
-package utils
+package utils_test
 
 import (
 	"fmt"
 	"testing"
+	"wt/pkg/core/utils"
 )
 
 func TestNewCollection(t *testing.T) {
 	t.Run("It creates a new collection", func(t *testing.T) {
-		collection := NewCollection[int]([]int{1, 2, 3})
+		collection := utils.NewCollection[int]([]int{1, 2, 3})
 
 		if len(collection.Items) != 3 {
 			t.Error("NewCollection should create a new collection")
@@ -29,7 +30,7 @@ func TestNewCollection(t *testing.T) {
 
 func TestFilter(t *testing.T) {
 	t.Run("It filters the items in the collection", func(t *testing.T) {
-		collection := Collection[int]{Items: []int{1, 2, 3, 4, 5}}
+		collection := utils.Collection[int]{Items: []int{1, 2, 3, 4, 5}}
 
 		filteredCollection := collection.Filter(func(item int, index int) bool {
 			return item%2 == 0
@@ -51,7 +52,7 @@ func TestFilter(t *testing.T) {
 
 func TestMap(t *testing.T) {
 	t.Run("It maps the items in the collection", func(t *testing.T) {
-		collection := Collection[int]{Items: []int{1, 2, 3}}
+		collection := utils.Collection[int]{Items: []int{1, 2, 3}}
 
 		mappedCollection := collection.Map(func(item int, index int) int {
 			return item * 2
@@ -77,7 +78,7 @@ func TestMap(t *testing.T) {
 
 func TestSlice(t *testing.T) {
 	t.Run("It slices the items in the collection", func(t *testing.T) {
-		collection := Collection[int]{Items: []int{1, 2, 3}}
+		collection := utils.Collection[int]{Items: []int{1, 2, 3}}
 
 		slicedCollection := collection.Slice(1, 3)
 
@@ -97,7 +98,7 @@ func TestSlice(t *testing.T) {
 
 func TestCount(t *testing.T) {
 	t.Run("It returns the number of items in the collection", func(t *testing.T) {
-		collection := Collection[int]{Items: []int{1, 2, 3}}
+		collection := utils.Collection[int]{Items: []int{1, 2, 3}}
 
 		count := collection.Count()
 
@@ -109,9 +110,9 @@ func TestCount(t *testing.T) {
 
 func TestReduce(t *testing.T) {
 	t.Run("It reduces the items in the collection", func(t *testing.T) {
-		collection := Collection[int]{Items: []int{1, 2, 3}}
+		collection := utils.Collection[int]{Items: []int{1, 2, 3}}
 
-		reduced := Reduce[int, int](collection, func(accumulator int, item int, index int) int {
+		reduced := utils.Reduce[int, int](collection, func(accumulator int, item int, index int) int {
 			return accumulator + item
 		}, 0)
 
@@ -123,7 +124,7 @@ func TestReduce(t *testing.T) {
 
 func TestToCollection(t *testing.T) {
 	t.Run("It converts the items to a collection", func(t *testing.T) {
-		collection := ToCollection[string, int]([]int{1, 2, 3}, func(item int) string {
+		collection := utils.ToCollection[string, int]([]int{1, 2, 3}, func(item int) string {
 			return fmt.Sprintf("value: %d", item)
 		})
 

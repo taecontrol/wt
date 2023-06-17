@@ -8,6 +8,8 @@ import (
 )
 
 type ConfigContract interface {
+	GetInitCommands() []string
+	GetTerminateCommands() []string
 	LoadConfig() error
 	DefaultConfigPath() string
 }
@@ -27,6 +29,14 @@ func NewConfig() *Config {
 		ReadFile:     os.ReadFile,
 		ParseYaml:    yaml.Unmarshal,
 	}
+}
+
+func (c Config) GetInitCommands() []string {
+	return c.InitCommands
+}
+
+func (c Config) GetTerminateCommands() []string {
+	return c.TerminateCommands
 }
 
 func (c *Config) LoadConfig() error {
