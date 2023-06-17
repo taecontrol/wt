@@ -3,15 +3,12 @@ package main
 import (
 	"fmt"
 	"os"
-	"os/exec"
 	"wt/cmd"
 	"wt/pkg/core"
 )
 
 func main() {
-	app := &core.App{
-		Exec: exec.Command,
-	}
+	app := core.NewApp()
 
 	rootCmd := cmd.NewRootCmd(app)
 

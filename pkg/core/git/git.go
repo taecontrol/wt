@@ -6,11 +6,11 @@ import (
 )
 
 type GitContract interface {
-	List(Exec utils.CommandExecHandler) (utils.Collection[string], error)
-	AddWorktree(path string, branch string, Exec utils.CommandExecHandler, newBranchOption bool) error
-	RemoveWorktree(path string, Exec utils.CommandExecHandler, forceOption bool) error
-	ListWorktrees(Exec utils.CommandExecHandler) (utils.Collection[utils.Worktree], error)
-	GetMainWorktree(Exec utils.CommandExecHandler) (utils.Worktree, error)
+	List(CmdExec utils.CmdExecutorContract) (utils.Collection[string], error)
+	AddWorktree(path string, branch string, CmdExec utils.CmdExecutorContract, newBranchOption bool) error
+	RemoveWorktree(path string, CmdExec utils.CmdExecutorContract, forceOption bool) error
+	ListWorktrees(CmdExec utils.CmdExecutorContract) (utils.Collection[utils.Worktree], error)
+	GetMainWorktree(CmdExec utils.CmdExecutorContract) (utils.Worktree, error)
 }
 
 type Git struct{}
@@ -19,8 +19,8 @@ func NewGit() *Git {
 	return &Git{}
 }
 
-func (git *Git) List(Exec utils.CommandExecHandler) (utils.Collection[string], error) {
-	command := Exec("git", "branch", "--list")
+func (git *Git) List(CmdExec utils.CmdExecutorContract) (utils.Collection[string], error) {
+	command := CmdExec.Exec("git", "branch", "--list")
 
 	out, err := command.Output()
 	if err != nil {
@@ -44,14 +44,14 @@ func (git *Git) List(Exec utils.CommandExecHandler) (utils.Collection[string], e
 	return branches, nil
 }
 
-func (git *Git) AddWorktree(path string, branch string, Exec utils.CommandExecHandler, newBranchOption bool) error {
+func (git *Git) AddWorktree(path string, branch string, CmdExec utils.CmdExecutorContract, newBranchOption bool) error {
 	args := []string{"worktree", "add", path}
 
 	if newBranchOption {
 		args = append(args, "-b")
 	}
 
-	command := Exec("git", append(args, branch)...)
+	command := CmdExec.Exec("git", append(args, branch)...)
 
 	err := command.Run()
 	if err != nil {
@@ -61,14 +61,14 @@ func (git *Git) AddWorktree(path string, branch string, Exec utils.CommandExecHa
 	return nil
 }
 
-func (git *Git) RemoveWorktree(path string, Exec utils.CommandExecHandler, forceOption bool) error {
+func (git *Git) RemoveWorktree(path string, CmdExec utils.CmdExecutorContract, forceOption bool) error {
 	args := []string{"worktree", "remove", path}
 
 	if forceOption {
 		args = append(args, "--force")
 	}
 
-	command := Exec("git", args...)
+	command := CmdExec.Exec("git", args...)
 
 	err := command.Run()
 	if err != nil {
@@ -78,8 +78,8 @@ func (git *Git) RemoveWorktree(path string, Exec utils.CommandExecHandler, force
 	return nil
 }
 
-func (git *Git) ListWorktrees(Exec utils.CommandExecHandler) (utils.Collection[utils.Worktree], error) {
-	command := Exec("git", "worktree", "list", "--porcelain")
+func (git *Git) ListWorktrees(CmdExec utils.CmdExecutorContract) (utils.Collection[utils.Worktree], error) {
+	command := CmdExec.Exec("git", "worktree", "list", "--porcelain")
 
 	out, err := command.Output()
 	if err != nil {
@@ -124,8 +124,8 @@ func (git *Git) ListWorktrees(Exec utils.CommandExecHandler) (utils.Collection[u
 	return worktreesCollection, nil
 }
 
-func (git *Git) GetMainWorktree(Exec utils.CommandExecHandler) (utils.Worktree, error) {
-	worktrees, err := git.ListWorktrees(Exec)
+func (git *Git) GetMainWorktree(CmdExec utils.CmdExecutorContract) (utils.Worktree, error) {
+	worktrees, err := git.ListWorktrees(CmdExec)
 	if err != nil {
 		return utils.Worktree{}, err
 	}

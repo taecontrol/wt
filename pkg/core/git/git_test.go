@@ -2,18 +2,17 @@ package git
 
 import (
 	"os/exec"
-	"strings"
 	"testing"
+	"wt/pkg/core/utils"
 )
 
 func TestList(t *testing.T) {
 	t.Run("It returns a list of branches", func(t *testing.T) {
-		ExecHandlerMock := func(name string, arg ...string) *exec.Cmd {
-			return exec.Command("echo", "  master\n* develop\n  feature/branch\n+ test")
-		}
+		cmdExecMock := utils.NewCmdExecutorMock()
+		cmdExecMock.On("Exec", "git", []string{"branch", "--list"}).Return(exec.Command("echo", "  master\n* develop\n  feature/branch\n+ test"))
 
 		git := &Git{}
-		branches, err := git.List(ExecHandlerMock)
+		branches, err := git.List(cmdExecMock)
 
 		if err != nil {
 			t.Errorf("List should return a list of branches: %v", err)
@@ -30,101 +29,78 @@ func TestList(t *testing.T) {
 		if branches.Get(3) != "test" {
 			t.Errorf("Fourth item should be test, got %s", branches.Get(3))
 		}
+
+		cmdExecMock.AssertExpectations(t)
 	})
 }
 
 func TestAddWorktree(t *testing.T) {
 	t.Run("It adds a worktree", func(t *testing.T) {
-		var args string
-
-		ExecHandlerMock := func(name string, arg ...string) *exec.Cmd {
-			args = name + " " + strings.Join(arg, " ")
-			return exec.Command("echo", "  master\n* develop\n  feature/branch\n+ test")
-		}
+		cmdExecMock := utils.NewCmdExecutorMock()
+		cmdExecMock.On("Exec", "git", []string{"worktree", "add", "/path/to/worktree", "test"}).Return(exec.Command("echo", "Command executed"))
 
 		git := &Git{}
-		err := git.AddWorktree("/path/to/worktree", "test", ExecHandlerMock, false)
-
-		if args != "git worktree add /path/to/worktree test" {
-			t.Errorf("Args should be git worktree add /path/to/worktree test, got %s", args)
-		}
+		err := git.AddWorktree("/path/to/worktree", "test", cmdExecMock, false)
 
 		if err != nil {
 			t.Errorf("AddWorktree should add a worktree: %v", err)
 		}
+
+		cmdExecMock.AssertExpectations(t)
 	})
 
 	t.Run("It adds a worktree with the -b option", func(t *testing.T) {
-		var args string
-
-		ExecHandlerMock := func(name string, arg ...string) *exec.Cmd {
-			args = name + " " + strings.Join(arg, " ")
-			return exec.Command("echo", "  master\n* develop\n  feature/branch\n+ test")
-		}
+		cmdExecMock := utils.NewCmdExecutorMock()
+		cmdExecMock.On("Exec", "git", []string{"worktree", "add", "/path/to/worktree", "-b", "test"}).Return(exec.Command("echo", "Command executed"))
 
 		git := &Git{}
-		err := git.AddWorktree("/path/to/worktree", "test", ExecHandlerMock, true)
-
-		if args != "git worktree add /path/to/worktree -b test" {
-			t.Errorf("Args should be git worktree add /path/to/worktree -b test, got %s", args)
-		}
+		err := git.AddWorktree("/path/to/worktree", "test", cmdExecMock, true)
 
 		if err != nil {
 			t.Errorf("AddWorktree should add a worktree: %v", err)
 		}
+
+		cmdExecMock.AssertExpectations(t)
 	})
 }
 
 func TestRemoveWorktree(t *testing.T) {
 	t.Run("It removes a worktree", func(t *testing.T) {
-		var args string
-
-		ExecHandlerMock := func(name string, arg ...string) *exec.Cmd {
-			args = name + " " + strings.Join(arg, " ")
-			return exec.Command("echo", "  master\n* develop\n  feature/branch\n+ test")
-		}
+		cmdExecMock := utils.NewCmdExecutorMock()
+		cmdExecMock.On("Exec", "git", []string{"worktree", "remove", "/path/to/worktree"}).Return(exec.Command("echo", "Command executed"))
 
 		git := &Git{}
-		err := git.RemoveWorktree("/path/to/worktree", ExecHandlerMock, false)
-
-		if args != "git worktree remove /path/to/worktree" {
-			t.Errorf("Args should be git worktree remove /path/to/worktree, got %s", args)
-		}
+		err := git.RemoveWorktree("/path/to/worktree", cmdExecMock, false)
 
 		if err != nil {
 			t.Errorf("RemoveWorktree should remove a worktree: %v", err)
 		}
+
+		cmdExecMock.AssertExpectations(t)
 	})
 
 	t.Run("It removes a worktree with the --force option", func(t *testing.T) {
-		var args string
-
-		ExecHandlerMock := func(name string, arg ...string) *exec.Cmd {
-			args = name + " " + strings.Join(arg, " ")
-			return exec.Command("echo", "  master\n* develop\n  feature/branch\n+ test")
-		}
+		cmdExecMock := utils.NewCmdExecutorMock()
+		cmdExecMock.On("Exec", "git", []string{"worktree", "remove", "/path/to/worktree", "--force"}).Return(exec.Command("echo", "Command executed"))
 
 		git := &Git{}
-		err := git.RemoveWorktree("/path/to/worktree", ExecHandlerMock, true)
-
-		if args != "git worktree remove /path/to/worktree --force" {
-			t.Errorf("Args should be git worktree remove /path/to/worktree --force, got %s", args)
-		}
+		err := git.RemoveWorktree("/path/to/worktree", cmdExecMock, true)
 
 		if err != nil {
 			t.Errorf("RemoveWorktree should remove a worktree: %v", err)
 		}
+
+		cmdExecMock.AssertExpectations(t)
 	})
 }
 
 func TestListWorktrees(t *testing.T) {
 	t.Run("It returns a list of worktrees", func(t *testing.T) {
-		ExecHandlerMock := func(name string, arg ...string) *exec.Cmd {
-			return exec.Command("echo", "worktree /path/to/bare-source\nbare\nworktree /path/to/linked-worktree\nHEAD abcd1234abcd1234abcd1234abcd1234abcd1234\nbranch refs/heads/master\nworktree /path/to/other-linked-worktree\nHEAD 1234abc1234abc1234abc1234abc1234abc1234a\ndetached\nworktree /path/to/linked-worktree-locked-no-reason\nHEAD 5678abc5678abc5678abc5678abc5678abc5678c\nbranch refs/heads/locked-no-reason\nlocked\nworktree /path/to/linked-worktree-locked-with-reason\nHEAD 3456def3456def3456def3456def3456def3456b\nbranch refs/heads/locked-with-reason\nlocked reason why is locked\nworktree /path/to/linked-worktree-prunable\nHEAD 1233def1234def1234def1234def1234def1234b\ndetached\nprunable gitdir file points to non-existent location")
-		}
+		cmdExecMock := utils.NewCmdExecutorMock()
+		cmdExecMock.On("Exec", "git", []string{"worktree", "list", "--porcelain"}).Return(exec.Command("echo", "worktree /path/to/bare-source\nbare\nworktree /path/to/linked-worktree\nHEAD abcd1234abcd1234abcd1234abcd1234abcd1234\nbranch refs/heads/master\nworktree /path/to/other-linked-worktree\nHEAD 1234abc1234abc1234abc1234abc1234abc1234a\ndetached\nworktree /path/to/linked-worktree-locked-no-reason\nHEAD 5678abc5678abc5678abc5678abc5678abc5678c\nbranch refs/heads/locked-no-reason\nlocked\nworktree /path/to/linked-worktree-locked-with-reason\nHEAD 3456def3456def3456def3456def3456def3456b\nbranch refs/heads/locked-with-reason\nlocked reason why is locked\nworktree /path/to/linked-worktree-prunable\nHEAD 1233def1234def1234def1234def1234def1234b\ndetached\nprunable gitdir file points to non-existent location"))
 
 		git := &Git{}
-		worktrees, err := git.ListWorktrees(ExecHandlerMock)
+		worktrees, err := git.ListWorktrees(cmdExecMock)
 
 		if err != nil {
 			t.Errorf("ListWorktrees should return a list of worktrees: %v", err)
@@ -153,17 +129,18 @@ func TestListWorktrees(t *testing.T) {
 		if worktrees.Get(1).Branch != "refs/heads/master" {
 			t.Errorf("Second item should be refs/heads/master, got %s", worktrees.Get(1).Branch)
 		}
+
+		cmdExecMock.AssertExpectations(t)
 	})
 }
 
 func TestGetMainWorktree(t *testing.T) {
 	t.Run("It returns the main worktree", func(t *testing.T) {
-		ExecHandlerMock := func(name string, arg ...string) *exec.Cmd {
-			return exec.Command("echo", "worktree /path/to/linked-worktree\nHEAD abcd1234abcd1234abcd1234abcd1234abcd1234\nbranch refs/heads/master\nworktree /path/to/other-linked-worktree\nHEAD 1234abc1234abc1234abc1234abc1234abc1234a\ndetached\nworktree /path/to/linked-worktree-locked-no-reason\nHEAD 5678abc5678abc5678abc5678abc5678abc5678c\nbranch refs/heads/locked-no-reason\nlocked\nworktree /path/to/linked-worktree-locked-with-reason\nHEAD 3456def3456def3456def3456def3456def3456b\nbranch refs/heads/locked-with-reason\nlocked reason why is locked\nworktree /path/to/linked-worktree-prunable\nHEAD 1233def1234def1234def1234def1234def1234b\ndetached\nprunable gitdir file points to non-existent location")
-		}
+		cmdExecMock := utils.NewCmdExecutorMock()
+		cmdExecMock.On("Exec", "git", []string{"worktree", "list", "--porcelain"}).Return(exec.Command("echo", "worktree /path/to/linked-worktree\nHEAD abcd1234abcd1234abcd1234abcd1234abcd1234\nbranch refs/heads/master\nworktree /path/to/other-linked-worktree\nHEAD 1234abc1234abc1234abc1234abc1234abc1234a\ndetached\nworktree /path/to/linked-worktree-locked-no-reason\nHEAD 5678abc5678abc5678abc5678abc5678abc5678c\nbranch refs/heads/locked-no-reason\nlocked\nworktree /path/to/linked-worktree-locked-with-reason\nHEAD 3456def3456def3456def3456def3456def3456b\nbranch refs/heads/locked-with-reason\nlocked reason why is locked\nworktree /path/to/linked-worktree-prunable\nHEAD 1233def1234def1234def1234def1234def1234b\ndetached\nprunable gitdir file points to non-existent location"))
 
 		git := &Git{}
-		worktree, err := git.GetMainWorktree(ExecHandlerMock)
+		worktree, err := git.GetMainWorktree(cmdExecMock)
 
 		if err != nil {
 			t.Errorf("GetMainWorktree should return a worktrees: %v", err)
@@ -181,5 +158,7 @@ func TestGetMainWorktree(t *testing.T) {
 		if worktree.Branch != "refs/heads/master" {
 			t.Errorf("Second item should be refs/heads/master, got %s", worktree.Branch)
 		}
+
+		cmdExecMock.AssertExpectations(t)
 	})
 }

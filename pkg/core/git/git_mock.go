@@ -1,49 +1,40 @@
 package git
 
-import "wt/pkg/core/utils"
+import (
+	"wt/pkg/core/utils"
+
+	"github.com/stretchr/testify/mock"
+)
 
 type GitMock struct {
-	count map[string]int
+	mock.Mock
 }
 
 func NewGitMock() *GitMock {
-	return &GitMock{
-		count: map[string]int{},
-	}
+	return &GitMock{}
 }
 
-func (gitMock *GitMock) WasCalledTimes(method string, count int) bool {
-	return gitMock.count[method] == count
+func (gitMock *GitMock) List(CmdExec utils.CmdExecutorContract) (utils.Collection[string], error) {
+	args := gitMock.Called(CmdExec)
+	return args.Get(0).(utils.Collection[string]), args.Error(1)
 }
 
-func (gitMock *GitMock) GetCount(method string) int {
-	return gitMock.count[method]
+func (gitMock *GitMock) AddWorktree(path string, branch string, CmdExec utils.CmdExecutorContract, newBranchOption bool) error {
+	args := gitMock.Called(path, branch, CmdExec, newBranchOption)
+	return args.Error(0)
 }
 
-func (gitMock *GitMock) List(Exec utils.CommandExecHandler) (utils.Collection[string], error) {
-	gitMock.count["List"]++
-	return utils.NewCollection[string]([]string{"master", "develop"}), nil
+func (gitMock *GitMock) RemoveWorktree(path string, CmdExec utils.CmdExecutorContract, forceOption bool) error {
+	args := gitMock.Called(path, CmdExec, forceOption)
+	return args.Error(0)
 }
 
-func (gitMock *GitMock) AddWorktree(path string, branch string, Exec utils.CommandExecHandler, newBranchOption bool) error {
-	gitMock.count["AddWorktree"]++
-	return nil
+func (gitMock *GitMock) ListWorktrees(CmdExec utils.CmdExecutorContract) (utils.Collection[utils.Worktree], error) {
+	args := gitMock.Called(CmdExec)
+	return args.Get(0).(utils.Collection[utils.Worktree]), args.Error(1)
 }
 
-func (gitMock *GitMock) RemoveWorktree(path string, Exec utils.CommandExecHandler, forceOption bool) error {
-	gitMock.count["RemoveWorktree"]++
-	return nil
-}
-
-func (gitMock *GitMock) ListWorktrees(Exec utils.CommandExecHandler) (utils.Collection[utils.Worktree], error) {
-	gitMock.count["ListWorktrees"]++
-	return utils.NewCollection[utils.Worktree]([]utils.Worktree{
-		{Branch: "refs/heads/main", Path: "/home/user/main"},
-		{Branch: "refs/heads/dev", Path: "/home/user/dev"},
-	}), nil
-}
-
-func (gitMock *GitMock) GetMainWorktree(Exec utils.CommandExecHandler) (utils.Worktree, error) {
-	gitMock.count["GetMainWorktree"]++
-	return utils.Worktree{Branch: "refs/heads/main", Path: "/home/user/main"}, nil
+func (gitMock *GitMock) GetMainWorktree(CmdExec utils.CmdExecutorContract) (utils.Worktree, error) {
+	args := gitMock.Called(CmdExec)
+	return args.Get(0).(utils.Worktree), args.Error(1)
 }

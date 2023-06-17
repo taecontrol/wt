@@ -2,22 +2,23 @@ package cmd
 
 import (
 	"context"
-	"os/exec"
 	"testing"
 	"wt/pkg/core"
 	"wt/pkg/core/git"
+	"wt/pkg/core/utils"
 )
 
 func TestAdd(t *testing.T) {
 	t.Run("add", func(t *testing.T) {
 		addCmd := NewAddCmd()
 		app := &core.App{
-			Exec: func(name string, args ...string) *exec.Cmd {
-				return exec.Command("echo", "command executed")
-			},
+			Exec: utils.NewCmdExecutorMock(),
 
 			Git: git.NewGitMock(),
 		}
+
+		app.Git.(*git.GitMock).On("GetMainWorktree", app.Exec).Return(utils.Worktree{Branch: "refs/heads/main", Path: "/home/user/main"}, nil)
+		app.Git.(*git.GitMock).On("AddWorktree", "/home/user/main/test_worktree", "FEAT-1", app.Exec, false).Return(nil)
 
 		ctx := context.WithValue(context.Background(), core.AppKey{}, app)
 		addCmd.SetContext(ctx)
@@ -25,12 +26,6 @@ func TestAdd(t *testing.T) {
 		addCmd.SetArgs([]string{"test_worktree", "FEAT-1"})
 		addCmd.Execute()
 
-		if !app.Git.(*git.GitMock).WasCalledTimes("GetMainWorktree", 1) {
-			t.Errorf("Expected GetMainWorktree to be called 1 time, but it was called %d times", app.Git.(*git.GitMock).GetCount("GetMainWorktree"))
-		}
-
-		if !app.Git.(*git.GitMock).WasCalledTimes("AddWorktree", 1) {
-			t.Errorf("Expected AddWorktree to be called 1 time, but it was called %d times", app.Git.(*git.GitMock).GetCount("AddWorktree"))
-		}
+		app.Git.(*git.GitMock).AssertExpectations(t)
 	})
 }

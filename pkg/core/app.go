@@ -1,7 +1,6 @@
 package core
 
 import (
-	"os/exec"
 	"wt/pkg/core/git"
 	"wt/pkg/core/utils"
 )
@@ -9,13 +8,13 @@ import (
 type AppKey struct{}
 
 type App struct {
-	Exec utils.CommandExecHandler
+	Exec utils.CmdExecutorContract
 	Git  git.GitContract
 }
 
 func NewApp() *App {
 	return &App{
-		Exec: exec.Command,
+		Exec: utils.NewCmdExecutor(),
 		Git:  git.NewGit(),
 	}
 }
