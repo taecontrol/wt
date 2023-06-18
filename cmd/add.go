@@ -15,8 +15,9 @@ func NewAddCmd() *cobra.Command {
 		Short: "Add new worktree and run initialization commands",
 		Long: `Add new worktree and run initialization commands. For example:
 
-	This command will create a new wortree in ../worktrees/<worktree_name> and will checkout the <branch> branch.
-	wt add <worktree_name> <branch>
+wt add <worktree_name> <branch>
+
+This command will create a new worktree in ../worktrees/<worktree_name> and will checkout the <branch> branch.
 	`,
 		Run: func(cmd *cobra.Command, args []string) {
 			app := cmd.Context().Value(core.AppKey{}).(*core.App)
