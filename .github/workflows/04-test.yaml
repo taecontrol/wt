@@ -1,8 +1,11 @@
-name: Release
+name: Run tests
 on:
   push:
-    tags:
-      - 'v*'
+    branches:
+      - main
+  pull_request:
+    branches:
+      - '**'
 
 jobs:
   release:
@@ -11,7 +14,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        platform: [windows-latest]
+        platform: [ubuntu-latest]
     runs-on: ${{ matrix.platform }}
 
     steps:
@@ -35,12 +38,3 @@ jobs:
       # Run build of the application
       - name: Run build
         run: go build -o dist/wt-windows
-
-      - name: Create release
-        uses: xresloader/upload-to-github-release@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          file: "./dist/wt-windows"
-          tags: true
-          draft: true

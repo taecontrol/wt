@@ -1,11 +1,8 @@
-name: Run tests
+name: Release
 on:
   push:
-    branches:
-      - main
-  pull_request:
-    branches:
-      - '**'
+    tags:
+      - 'v*'
 
 jobs:
   release:
@@ -38,3 +35,12 @@ jobs:
       # Run build of the application
       - name: Run build
         run: go build -o dist/wt-windows
+
+      - name: Create release
+        uses: xresloader/upload-to-github-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          file: "./dist/wt-windows"
+          tags: true
+          draft: true
