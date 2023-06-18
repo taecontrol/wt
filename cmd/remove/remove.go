@@ -36,6 +36,18 @@ wt rm <worktree_name> --force
 				utils.LogError("[Error] worktree %s not found", name)
 				os.Exit(1)
 			}
+			mainWorktree, err := app.Git.GetMainWorktree(app.Exec)
+			if err != nil {
+				utils.LogError("[Error] %s", err.Error())
+				os.Exit(1)
+			}
+
+			branchPath := strings.Split(worktree.Branch, "/")
+
+			os.Setenv("BRANCH_NAME", branchPath[len(branchPath)-1])
+			os.Setenv("MAIN_WORKTREE_PATH", mainWorktree.Path)
+			os.Setenv("WORKTREE_PATH", worktree.Path)
+			os.Setenv("WORKTREE_NAME", name)
 
 			runTerminateCommands(app, config, worktree.Path)
 
