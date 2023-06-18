@@ -20,19 +20,22 @@ Worktrees is an open source product, available for free. If you find Worktrees u
 On your local repository, create a new `.wt` like the next example:
 
 ```yaml
-initCommands:
-  - cp $MAIN_WORKTREE_PATH/.env $WORKTREE_PATH/.env
-  - mysqlsh root@localhost:33068 --sql -e "CREATE DATABASE $(echo $WORKTREE_NAME);" &&
-    sed -i '' "s/^DB_DATABASE=.*/DB_DATABASE=$(echo $WORKTREE_NAME)/" $(echo $WORKTREE_PATH)/.env
-  - composer install
-  - php artisan migrate --seed
-  - npm ci
-  - valet link $(echo $WORKTREE_NAME) --secure
-  - code .
+init_commands:
+    - echo $MAIN_WORKTREE_PATH
+    - cp $MAIN_WORKTREE_PATH/.env $WORKTREE_PATH/.env
+    - mysqlsh root@localhost:33068 --sql -e 'CREATE DATABASE $WORKTREE_NAME;'
+    - ls -a
+    - sed -i '' -e s/^DB_DATABASE=.*/DB_DATABASE=$WORKTREE_NAME/ $WORKTREE_PATH/.env
+    - composer install
+    - php artisan migrate --seed
+    - npm ci
+    - valet link $WORKTREE_NAME --secure
+    - code .
 
-terminateCommands:
-  - valet unlink $(echo $WORKTREE_NAME)
-  - mysqlsh root@localhost:33068 --sql -e "DROP DATABASE $(echo $WORKTREE_NAME);"
+
+terminate_commands:
+    - valet unlink $WORKTREE_NAME
+    - mysqlsh root@localhost:33068 --sql -e 'DROP DATABASE $WORKTREE_NAME;'
 ```
 
 On the condfiguration file you have the next env variables available:
