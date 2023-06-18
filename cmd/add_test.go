@@ -24,8 +24,8 @@ func TestAdd(t *testing.T) {
 		app.Config.(*core.ConfigMock).On("LoadConfig").Return(nil)
 		app.Config.(*core.ConfigMock).On("GetInitCommands").Return([]string{"echo '1st command'", "echo '2nd command'"})
 
-		app.Exec.(*utils.CmdExecutorMock).On("StdOutPipe", "echo '1st command'").Return(nil)
-		app.Exec.(*utils.CmdExecutorMock).On("StdOutPipe", "echo '2nd command'").Return(nil)
+		app.Exec.(*utils.CmdExecutorMock).On("StdOutPipe", "echo '1st command'", "/home/user/worktrees/test_worktree").Return(nil)
+		app.Exec.(*utils.CmdExecutorMock).On("StdOutPipe", "echo '2nd command'", "/home/user/worktrees/test_worktree").Return(nil)
 
 		ctx := context.WithValue(context.Background(), core.AppKey{}, app)
 		addCmd.SetContext(ctx)
@@ -52,8 +52,8 @@ func TestAdd(t *testing.T) {
 		app.Config.(*core.ConfigMock).On("LoadConfig").Return(nil)
 		app.Config.(*core.ConfigMock).On("GetInitCommands").Return([]string{"echo '1st command'", "echo '2nd command'"})
 
-		app.Exec.(*utils.CmdExecutorMock).On("StdOutPipe", "echo '1st command'").Return(nil)
-		app.Exec.(*utils.CmdExecutorMock).On("StdOutPipe", "echo '2nd command'").Return(nil)
+		app.Exec.(*utils.CmdExecutorMock).On("StdOutPipe", "echo '1st command'", "/home/user/worktrees/test_worktree").Return(nil)
+		app.Exec.(*utils.CmdExecutorMock).On("StdOutPipe", "echo '2nd command'", "/home/user/worktrees/test_worktree").Return(nil)
 
 		ctx := context.WithValue(context.Background(), core.AppKey{}, app)
 		addCmd.SetContext(ctx)

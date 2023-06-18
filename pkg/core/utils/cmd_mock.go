@@ -19,8 +19,8 @@ func (cmdExecutorMock *CmdExecutorMock) Exec(name string, arg ...string) *exec.C
 	return args.Get(0).(*exec.Cmd)
 }
 
-func (cmdExecutorMock *CmdExecutorMock) StdOutPipe(cmdString string) error {
-	args := cmdExecutorMock.Called(cmdString)
+func (cmdExecutorMock *CmdExecutorMock) StdOutPipe(cmdString string, path string) error {
+	args := cmdExecutorMock.Called(cmdString, path)
 
 	return args.Error(0)
 }
