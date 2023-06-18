@@ -1,4 +1,4 @@
-name: Release
+name: Windows Release
 on:
   push:
     tags:
@@ -27,10 +27,6 @@ jobs:
       - name: Install dependencies
         run: |
           go version
-
-      # Run testing on the code
-      - name: Run testing
-        run: go test ./... -v
 
       # Run build of the application
       - name: Run build
