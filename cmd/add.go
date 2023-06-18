@@ -24,9 +24,16 @@ func NewAddCmd() *cobra.Command {
 			branch := getBranchArg(args)
 			newBranchFlag := getNewBranchFlag(cmd)
 			config := loadConfig(app)
+			mainWorktree := getMainWorktree(app)
+			path := filepath.Clean(mainWorktree.Path + "/../worktrees/" + name)
 
-			addWorktree(app, name, branch, newBranchFlag)
-			runInitCommands(app, config)
+			os.Setenv("BRANCH_NAME", branch)
+			os.Setenv("MAIN_WORKTREE_PATH", mainWorktree.Path)
+			os.Setenv("WORKTREE_PATH", path)
+			os.Setenv("WORKTREE_NAME", name)
+
+			addWorktree(app, path, branch, newBranchFlag)
+			runInitCommands(app, config, path)
 		},
 	}
 
@@ -81,10 +88,7 @@ func loadConfig(app *core.App) core.ConfigContract {
 	return config
 }
 
-func addWorktree(app *core.App, name string, branch string, newBranchFlag bool) {
-	mainWorktree := getMainWorktree(app)
-	path := filepath.Clean(mainWorktree.Path + "/../worktrees/" + name)
-
+func addWorktree(app *core.App, path string, branch string, newBranchFlag bool) {
 	err := app.Git.AddWorktree(path, branch, app.Exec, newBranchFlag)
 	if err != nil {
 		utils.LogError("[Error] %s", err.Error())
@@ -92,9 +96,9 @@ func addWorktree(app *core.App, name string, branch string, newBranchFlag bool) 
 	}
 }
 
-func runInitCommands(app *core.App, config core.ConfigContract) {
+func runInitCommands(app *core.App, config core.ConfigContract, path string) {
 	for _, initCmd := range config.GetInitCommands() {
-		err := app.Exec.StdOutPipe(initCmd)
+		err := app.Exec.StdOutPipe(initCmd, path)
 		if err != nil {
 			utils.LogError("[Error] %s", err.Error())
 			os.Exit(1)

@@ -10,7 +10,7 @@ import (
 
 type CmdExecutorContract interface {
 	Exec(name string, arg ...string) *exec.Cmd
-	StdOutPipe(cmdString string) error
+	StdOutPipe(cmdString string, path string) error
 }
 
 type CmdExecutor struct{}
@@ -24,9 +24,10 @@ func (cmdExecutor *CmdExecutor) Exec(name string, arg ...string) *exec.Cmd {
 	return exec.Command(name, arg...)
 }
 
-func (cmdExecutor *CmdExecutor) StdOutPipe(cmdString string) error {
-	arr := strings.Split(cmdString, " ")
-	cmd := cmdExecutor.Exec(arr[0], arr[1:]...)
+func (cmdExecutor *CmdExecutor) StdOutPipe(cmdString string, path string) error {
+	cmd := cmdExecutor.Exec("/bin/sh", "-c", os.ExpandEnv(cmdString))
+	cmd.Dir = path
+
 	fmt.Println()
 
 	stdoutReader, err := cmd.StdoutPipe()
@@ -39,19 +40,23 @@ func (cmdExecutor *CmdExecutor) StdOutPipe(cmdString string) error {
 		return err
 	}
 
-	cmd.Start()
+	err = cmd.Start()
+	if err != nil {
+		return err
+	}
 
 	_, err = io.Copy(os.Stdout, stdoutReader)
 	if err != nil {
 		return err
 	}
 
-	w, err := io.Copy(os.Stderr, stderrReader)
+	_, err = io.Copy(os.Stderr, stderrReader)
 	if err != nil {
 		return err
 	}
-	if w > 0 {
-		os.Exit(1)
+
+	if err = cmd.Wait(); err != nil {
+		return fmt.Errorf("Error while running command \n")
 	}
 
 	fmt.Println()
