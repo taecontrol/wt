@@ -12,20 +12,28 @@ import (
 func NewAddCmd() *cobra.Command {
 	addCmd := &cobra.Command{
 		Use:   "add",
-		Short: "Add new worktree and run initialization command",
-		Long: `Add new worktree and run initialization command. For example:
+		Short: "Add new worktree and run initialization commands",
+		Long: `Add new worktree and run initialization commands. For example:
 
 	This command will create a new wortree in ../worktrees/<worktree_name> and will checkout the <branch> branch.
 	wt add <worktree_name> <branch>
 	`,
 		Run: func(cmd *cobra.Command, args []string) {
 			app := cmd.Context().Value(core.AppKey{}).(*core.App)
+			mainWorktree := getMainWorktree(app)
+			config := loadConfig(app)
+
 			name := getNameArg(args)
 			branch := getBranchArg(args)
 			newBranchFlag := getNewBranchFlag(cmd)
-			config := loadConfig(app)
-			mainWorktree := getMainWorktree(app)
-			path := filepath.Clean(mainWorktree.Path + "/../worktrees/" + name)
+			pathFlag := getPathFlag(cmd, mainWorktree)
+
+			var path string
+			if pathFlag != "" {
+				path = filepath.Clean(pathFlag + "/" + name)
+			} else {
+				path = filepath.Clean(mainWorktree.Path + "/../worktrees/" + name)
+			}
 
 			os.Setenv("BRANCH_NAME", branch)
 			os.Setenv("MAIN_WORKTREE_PATH", mainWorktree.Path)
@@ -54,15 +62,35 @@ func getNameArg(args []string) string {
 func getBranchArg(args []string) string {
 	branch := args[1]
 	if branch == "" {
-		panic("branch name is required")
+		utils.LogError("[Error] branch name is required")
+		os.Exit(1)
 	}
 	return branch
+}
+
+func getPathFlag(cmd *cobra.Command, mainWorktree *utils.Worktree) string {
+	pathFlag, err := cmd.Flags().GetString("path")
+	if err != nil {
+		utils.LogError("[Error] %s", err.Error())
+		os.Exit(1)
+	}
+
+	if pathFlag == "" {
+		return pathFlag
+	}
+
+	if !filepath.IsAbs(pathFlag) {
+		return filepath.Clean(mainWorktree.Path + "/" + pathFlag)
+	}
+
+	return pathFlag
 }
 
 func getNewBranchFlag(cmd *cobra.Command) bool {
 	newBranchFlag, err := cmd.Flags().GetBool("newBranch")
 	if err != nil {
-		panic(err)
+		utils.LogError("[Error] %s", err.Error())
+		os.Exit(1)
 	}
 
 	return newBranchFlag
@@ -71,7 +99,8 @@ func getNewBranchFlag(cmd *cobra.Command) bool {
 func getMainWorktree(app *core.App) *utils.Worktree {
 	mainWorktree, err := app.Git.GetMainWorktree(app.Exec)
 	if err != nil {
-		panic(err)
+		utils.LogError("[Error] %s", err.Error())
+		os.Exit(1)
 	}
 
 	return &mainWorktree
