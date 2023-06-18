@@ -19,6 +19,16 @@ func (c *Collection[T]) Get(index int) T {
 	return c.Items[index]
 }
 
+func (c *Collection[T]) Find(callback FilterCallback[T]) *T {
+	for index, item := range c.Items {
+		if callback(item, index) {
+			return &item
+		}
+	}
+
+	return nil
+}
+
 func (c *Collection[T]) Filter(callback FilterCallback[T]) Collection[T] {
 	var filteredItems []T
 
