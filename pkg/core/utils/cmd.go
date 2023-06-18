@@ -5,6 +5,7 @@ import (
 	"io"
 	"os"
 	"os/exec"
+	"runtime"
 	"strings"
 )
 
@@ -25,7 +26,14 @@ func (cmdExecutor *CmdExecutor) Exec(name string, arg ...string) *exec.Cmd {
 }
 
 func (cmdExecutor *CmdExecutor) StdOutPipe(cmdString string, path string) error {
-	cmd := cmdExecutor.Exec("/bin/sh", "-c", os.ExpandEnv(cmdString))
+	var shell string
+	if runtime.GOOS == "windows" {
+		shell = "cmd"
+	} else {
+		shell = "/bin/sh"
+	}
+
+	cmd := cmdExecutor.Exec(shell, "-c", os.ExpandEnv(cmdString))
 	cmd.Dir = path
 
 	fmt.Println()
@@ -56,7 +64,7 @@ func (cmdExecutor *CmdExecutor) StdOutPipe(cmdString string, path string) error 
 	}
 
 	if err = cmd.Wait(); err != nil {
-		return fmt.Errorf("Error while running command \n")
+		return fmt.Errorf("error while running command")
 	}
 
 	fmt.Println()
