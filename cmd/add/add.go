@@ -1,4 +1,4 @@
-package cmd
+package add
 
 import (
 	"os"

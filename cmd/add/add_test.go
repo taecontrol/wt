@@ -1,9 +1,9 @@
-package cmd_test
+package add_test
 
 import (
 	"context"
 	"testing"
-	"wt/cmd"
+	"wt/cmd/add"
 	"wt/pkg/core"
 	"wt/pkg/core/git"
 	"wt/pkg/core/utils"
@@ -11,7 +11,7 @@ import (
 
 func TestAdd(t *testing.T) {
 	t.Run("add", func(t *testing.T) {
-		addCmd := cmd.NewAddCmd()
+		addCmd := add.NewAddCmd()
 		app := &core.App{
 			Exec:   utils.NewCmdExecutorMock(),
 			Git:    git.NewGitMock(),
@@ -39,7 +39,7 @@ func TestAdd(t *testing.T) {
 	})
 
 	t.Run("add with -b option", func(t *testing.T) {
-		addCmd := cmd.NewAddCmd()
+		addCmd := add.NewAddCmd()
 		app := &core.App{
 			Exec:   utils.NewCmdExecutorMock(),
 			Git:    git.NewGitMock(),
@@ -67,7 +67,7 @@ func TestAdd(t *testing.T) {
 	})
 
 	t.Run("add with -p option", func(t *testing.T) {
-		addCmd := cmd.NewAddCmd()
+		addCmd := add.NewAddCmd()
 		app := &core.App{
 			Exec:   utils.NewCmdExecutorMock(),
 			Git:    git.NewGitMock(),

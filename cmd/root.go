@@ -2,6 +2,7 @@ package cmd
 
 import (
 	"context"
+	"wt/cmd/add"
 	"wt/pkg/core"
 
 	"github.com/spf13/cobra"
@@ -22,7 +23,7 @@ func NewRootCmd(app *core.App) *cobra.Command {
 		},
 	}
 
-	rootCmd.AddCommand(NewAddCmd())
+	rootCmd.AddCommand(add.NewAddCmd())
 
 	return rootCmd
 }
