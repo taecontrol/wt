@@ -11,7 +11,7 @@ import (
 
 func NewRemoveCmd() *cobra.Command {
 	removeCmd := &cobra.Command{
-		Use:   "remove",
+		Use:   "rm",
 		Short: "Remove worktree and run terminate commands",
 		Long: `Remove worktree and run terminate commands. For example:
 
@@ -30,7 +30,7 @@ wt rm <worktree_name> --force
 				os.Exit(1)
 			}
 			worktree := worktrees.Find(func(item utils.Worktree, index int) bool {
-				return strings.Contains(item.Branch, name)
+				return strings.Contains(item.Path, name)
 			})
 			if worktree == nil {
 				utils.LogError("[Error] worktree %s not found", name)
