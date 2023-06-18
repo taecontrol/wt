@@ -55,7 +55,8 @@ This command will create a new worktree in ../worktrees/<worktree_name> and will
 func getNameArg(args []string) string {
 	name := args[0]
 	if name == "" {
-		panic("worktree name is required")
+		utils.LogError("[Error] worktree name is required")
+		os.Exit(1)
 	}
 	return name
 }
