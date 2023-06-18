@@ -1,0 +1,46 @@
+name: Release
+on:
+  push:
+    tags:
+      - 'v*'
+
+jobs:
+  release:
+    permissions:
+      contents: write
+    strategy:
+      fail-fast: false
+      matrix:
+        platform: [macos-latest]
+    runs-on: ${{ matrix.platform }}
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Setup Go
+        uses: actions/setup-go@v2
+        with:
+          go-version: '1.20.3'
+
+      # Install all the dependencies
+      - name: Install dependencies
+        run: |
+          go version
+
+      # Run testing on the code
+      - name: Run testing
+        run: go test ./... -v
+
+      # Run build of the application
+      - name: Run build
+        run: go build -o dist/wt-macos
+
+      - name: Create release
+        uses: xresloader/upload-to-github-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          file: "./dist/wt-macos"
+          tags: true
+          draft: true
