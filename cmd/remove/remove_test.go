@@ -46,7 +46,7 @@ func TestAdd(t *testing.T) {
 			Config: core.NewConfigMock(),
 		}
 
-		app.Git.(*git.GitMock).On("ListWorktrees", app.Exec).Return(utils.NewCollection[utils.Worktree]([]utils.Worktree{{Branch: "refs/heads/test_worktree", Path: "/home/user/test_worktree"}}), nil)
+		app.Git.(*git.GitMock).On("ListWorktrees", app.Exec).Return(utils.NewCollection[utils.Worktree]([]utils.Worktree{{Branch: "refs/heads/test", Path: "/home/user/test_worktree"}}), nil)
 		app.Git.(*git.GitMock).On("RemoveWorktree", "/home/user/test_worktree", app.Exec, true).Return(nil)
 
 		app.Config.(*core.ConfigMock).On("LoadConfig").Return(nil)
