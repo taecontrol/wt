@@ -62,13 +62,13 @@ func getNameArg(args []string) string {
 }
 
 func getForceFlag(cmd *cobra.Command) bool {
-	newBranchFlag, err := cmd.Flags().GetBool("newBranch")
+	forceFlag, err := cmd.Flags().GetBool("force")
 	if err != nil {
 		utils.LogError("[Error] %s", err.Error())
 		os.Exit(1)
 	}
 
-	return newBranchFlag
+	return forceFlag
 }
 
 func loadConfig(app *core.App) core.ConfigContract {
