@@ -23,8 +23,8 @@ func (configMock *ConfigMock) GetTerminateCommands() []string {
 	return args.Get(0).([]string)
 }
 
-func (configMock *ConfigMock) LoadConfig() error {
-	args := configMock.Called()
+func (configMock *ConfigMock) LoadConfig(path string) error {
+	args := configMock.Called(path)
 
 	return args.Error(0)
 }

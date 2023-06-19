@@ -21,7 +21,7 @@ func TestAdd(t *testing.T) {
 		app.Git.(*git.GitMock).On("GetMainWorktree", app.Exec).Return(utils.Worktree{Branch: "refs/heads/main", Path: "/home/user/main"}, nil)
 		app.Git.(*git.GitMock).On("AddWorktree", "/home/user/worktrees/test_worktree", "FEAT-1", app.Exec, false).Return(nil)
 
-		app.Config.(*core.ConfigMock).On("LoadConfig").Return(nil)
+		app.Config.(*core.ConfigMock).On("LoadConfig", "/home/user/main").Return(nil)
 		app.Config.(*core.ConfigMock).On("GetInitCommands").Return([]string{"echo '1st command'", "echo '2nd command'"})
 
 		app.Exec.(*utils.CmdExecutorMock).On("StdOutPipe", "echo '1st command'", "/home/user/worktrees/test_worktree").Return(nil)
@@ -49,7 +49,7 @@ func TestAdd(t *testing.T) {
 		app.Git.(*git.GitMock).On("GetMainWorktree", app.Exec).Return(utils.Worktree{Branch: "refs/heads/main", Path: "/home/user/main"}, nil)
 		app.Git.(*git.GitMock).On("AddWorktree", "/home/user/worktrees/test_worktree", "FEAT-1", app.Exec, true).Return(nil)
 
-		app.Config.(*core.ConfigMock).On("LoadConfig").Return(nil)
+		app.Config.(*core.ConfigMock).On("LoadConfig", "/home/user/main").Return(nil)
 		app.Config.(*core.ConfigMock).On("GetInitCommands").Return([]string{"echo '1st command'", "echo '2nd command'"})
 
 		app.Exec.(*utils.CmdExecutorMock).On("StdOutPipe", "echo '1st command'", "/home/user/worktrees/test_worktree").Return(nil)
@@ -77,7 +77,7 @@ func TestAdd(t *testing.T) {
 		app.Git.(*git.GitMock).On("GetMainWorktree", app.Exec).Return(utils.Worktree{Branch: "refs/heads/main", Path: "/home/user/main"}, nil)
 		app.Git.(*git.GitMock).On("AddWorktree", "/home/user/different/path/test_worktree", "FEAT-1", app.Exec, false).Return(nil)
 
-		app.Config.(*core.ConfigMock).On("LoadConfig").Return(nil)
+		app.Config.(*core.ConfigMock).On("LoadConfig", "/home/user/main").Return(nil)
 		app.Config.(*core.ConfigMock).On("GetInitCommands").Return([]string{"echo '1st command'", "echo '2nd command'"})
 
 		app.Exec.(*utils.CmdExecutorMock).On("StdOutPipe", "echo '1st command'", "/home/user/different/path/test_worktree").Return(nil)

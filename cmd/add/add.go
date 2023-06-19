@@ -22,7 +22,7 @@ This command will create a new worktree in ../worktrees/<worktree_name> and will
 		Run: func(cmd *cobra.Command, args []string) {
 			app := cmd.Context().Value(core.AppKey{}).(*core.App)
 			mainWorktree := getMainWorktree(app)
-			config := loadConfig(app)
+			config := loadConfig(app, mainWorktree.Path)
 
 			name := getNameArg(args)
 			branch := getBranchArg(args)
@@ -108,10 +108,10 @@ func getMainWorktree(app *core.App) *utils.Worktree {
 	return &mainWorktree
 }
 
-func loadConfig(app *core.App) core.ConfigContract {
+func loadConfig(app *core.App, path string) core.ConfigContract {
 	config := app.Config
 
-	if err := config.LoadConfig(); err != nil {
+	if err := config.LoadConfig(path); err != nil {
 		utils.LogError("[Error] %s", err.Error())
 		os.Exit(1)
 	}

@@ -12,7 +12,7 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestAdd(t *testing.T) {
+func TestRemove(t *testing.T) {
 	t.Run("remove", func(t *testing.T) {
 		addCmd := remove.NewRemoveCmd()
 		app := &core.App{
@@ -29,7 +29,7 @@ func TestAdd(t *testing.T) {
 		app.Git.(*git.GitMock).On("GetMainWorktree", app.Exec).Return(worktrees.Items[0], nil)
 		app.Git.(*git.GitMock).On("RemoveWorktree", "/home/user/test_worktree", app.Exec, false).Return(nil)
 
-		app.Config.(*core.ConfigMock).On("LoadConfig").Return(nil)
+		app.Config.(*core.ConfigMock).On("LoadConfig", "/home/user/path_to_main_worktree").Return(nil)
 		app.Config.(*core.ConfigMock).On("GetTerminateCommands").Return([]string{"echo '1st command'", "echo '2nd command'"})
 
 		app.Exec.(*utils.CmdExecutorMock).On("StdOutPipe", "echo '1st command'", "/home/user/test_worktree").Return(nil)
@@ -67,7 +67,7 @@ func TestAdd(t *testing.T) {
 		app.Git.(*git.GitMock).On("GetMainWorktree", app.Exec).Return(worktrees.Items[0], nil)
 		app.Git.(*git.GitMock).On("RemoveWorktree", "/home/user/test_worktree", app.Exec, true).Return(nil)
 
-		app.Config.(*core.ConfigMock).On("LoadConfig").Return(nil)
+		app.Config.(*core.ConfigMock).On("LoadConfig", "/home/user/path_to_main_worktree").Return(nil)
 		app.Config.(*core.ConfigMock).On("GetTerminateCommands").Return([]string{"echo '1st command'", "echo '2nd command'"})
 
 		app.Exec.(*utils.CmdExecutorMock).On("StdOutPipe", "echo '1st command'", "/home/user/test_worktree").Return(nil)

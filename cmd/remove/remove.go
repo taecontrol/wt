@@ -19,7 +19,6 @@ wt rm <worktree_name> --force
 	`,
 		Run: func(cmd *cobra.Command, args []string) {
 			app := cmd.Context().Value(core.AppKey{}).(*core.App)
-			config := loadConfig(app)
 
 			name := getNameArg(args)
 			forceFlag := getForceFlag(cmd)
@@ -49,6 +48,7 @@ wt rm <worktree_name> --force
 			os.Setenv("WORKTREE_PATH", worktree.Path)
 			os.Setenv("WORKTREE_NAME", name)
 
+			config := loadConfig(app, mainWorktree.Path)
 			runTerminateCommands(app, config, worktree.Path)
 
 			err = app.Git.RemoveWorktree(worktree.Path, app.Exec, forceFlag)
@@ -83,10 +83,10 @@ func getForceFlag(cmd *cobra.Command) bool {
 	return forceFlag
 }
 
-func loadConfig(app *core.App) core.ConfigContract {
+func loadConfig(app *core.App, path string) core.ConfigContract {
 	config := app.Config
 
-	if err := config.LoadConfig(); err != nil {
+	if err := config.LoadConfig(path); err != nil {
 		utils.LogError("[Error] %s", err.Error())
 		os.Exit(1)
 	}

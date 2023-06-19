@@ -10,7 +10,7 @@ import (
 type ConfigContract interface {
 	GetInitCommands() []string
 	GetTerminateCommands() []string
-	LoadConfig() error
+	LoadConfig(path string) error
 	DefaultConfigPath() string
 }
 
@@ -39,8 +39,11 @@ func (c Config) GetTerminateCommands() []string {
 	return c.TerminateCommands
 }
 
-func (c *Config) LoadConfig() error {
-	fileData, err := c.ReadFile(c.DefaultConfigPath())
+func (c *Config) LoadConfig(path string) error {
+	if filepath.Ext(path) != ".wt" {
+		path = path + "/.wt"
+	}
+	fileData, err := c.ReadFile(path)
 	if err != nil {
 		return err
 	}
